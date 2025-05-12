@@ -4,6 +4,16 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Play, Camera, Mic, Tv, Share2, Rss, FileText, Youtube, Instagram, Twitter } from 'lucide-react';
 import Link from 'next/link';
 
+// Fixed positions for particles to avoid hydration mismatch
+const FIXED_PARTICLES = Array(30).fill(0).map((_, i) => ({
+  left: `${(i * 3.33 + 1) % 100}%`,
+  top: `${(i * 7.77 + 5) % 100}%`,
+  yOffset: (i % 15) - 7,
+  xOffset: ((i + 3) % 15) - 7,
+  scale: 1 + ((i % 5) * 0.1),
+  duration: 5 + (i % 5),
+}));
+
 interface MediaIcon {
   icon: React.ReactNode;
   delay: number;
@@ -13,34 +23,37 @@ interface MediaIcon {
   };
 }
 
+// Fixed media icons configuration
+const MEDIA_ICONS: MediaIcon[] = [
+  { icon: <Camera size={24} />, delay: 0, position: { top: '20%', left: '10%' } },
+  { icon: <Mic size={24} />, delay: 0.2, position: { top: '70%', left: '15%' } },
+  { icon: <Tv size={24} />, delay: 0.4, position: { top: '30%', left: '85%' } },
+  { icon: <Share2 size={24} />, delay: 0.6, position: { top: '60%', left: '80%' } },
+  { icon: <Rss size={24} />, delay: 0.8, position: { top: '40%', left: '20%' } },
+  { icon: <FileText size={24} />, delay: 1, position: { top: '80%', left: '70%' } },
+  { icon: <Youtube size={28} />, delay: 1.2, position: { top: '25%', left: '75%' } },
+  { icon: <Instagram size={28} />, delay: 1.4, position: { top: '65%', left: '25%' } },
+  { icon: <Twitter size={28} />, delay: 1.6, position: { top: '50%', left: '50%' } },
+];
+
 const HeroSection = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [mediaIcons, setMediaIcons] = useState<MediaIcon[]>([]);
 
   useEffect(() => {
     setIsVisible(true);
+    setIsMounted(true);
     
     // Simulation de démarrage de vidéo après chargement
     setTimeout(() => {
       if (videoRef.current) {
-        videoRef.current.play();
+        videoRef.current.play().catch(err => {
+          // Silent catch for autoplay restrictions
+          console.log("Video autoplay prevented by browser:", err);
+        });
       }
     }, 1000);
-
-    // Configuration des icônes média flottantes
-    const icons: MediaIcon[] = [
-      { icon: <Camera size={24} />, delay: 0, position: { top: '20%', left: '10%' } },
-      { icon: <Mic size={24} />, delay: 0.2, position: { top: '70%', left: '15%' } },
-      { icon: <Tv size={24} />, delay: 0.4, position: { top: '30%', left: '85%' } },
-      { icon: <Share2 size={24} />, delay: 0.6, position: { top: '60%', left: '80%' } },
-      { icon: <Rss size={24} />, delay: 0.8, position: { top: '40%', left: '20%' } },
-      { icon: <FileText size={24} />, delay: 1, position: { top: '80%', left: '70%' } },
-      { icon: <Youtube size={28} />, delay: 1.2, position: { top: '25%', left: '75%' } },
-      { icon: <Instagram size={28} />, delay: 1.4, position: { top: '65%', left: '25%' } },
-      { icon: <Twitter size={28} />, delay: 1.6, position: { top: '50%', left: '50%' } },
-    ];
-    setMediaIcons(icons);
   }, []);
 
   return (
@@ -88,23 +101,23 @@ const HeroSection = () => {
 
       {/* Particules et icônes média */}
       <div className="absolute inset-0 z-10 pointer-events-none">
-        {/* Particules brillantes */}
-        {Array.from({ length: 30 }).map((_, i) => (
+        {/* Particules brillantes - avec des valeurs fixes pour éviter les erreurs d'hydratation */}
+        {FIXED_PARTICLES.map((particle, i) => (
           <motion.div
             key={i}
             className="absolute w-1 h-1 rounded-full bg-blue-400/40"
             style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
+              left: particle.left,
+              top: particle.top,
             }}
-            animate={{
-              y: [0, Math.random() * 30 - 15],
-              x: [0, Math.random() * 30 - 15],
+            animate={isMounted ? {
+              y: [0, particle.yOffset],
+              x: [0, particle.xOffset],
               opacity: [0.2, 0.5, 0.2],
-              scale: [1, Math.random() * 1.5 + 1, 1],
-            }}
+              scale: [1, particle.scale, 1],
+            } : {}}
             transition={{
-              duration: 5 + Math.random() * 5,
+              duration: particle.duration,
               repeat: Infinity,
               repeatType: "mirror",
             }}
@@ -112,7 +125,7 @@ const HeroSection = () => {
         ))}
 
         {/* Icônes média flottantes */}
-        {mediaIcons.map((item, index) => (
+        {MEDIA_ICONS.map((item, index) => (
           <motion.div
             key={index}
             className="absolute text-white/30 z-10"
@@ -124,20 +137,20 @@ const HeroSection = () => {
             animate={{ 
               opacity: 0.4, 
               scale: 1,
-              y: [0, Math.random() * 20 - 10],
-              x: [0, Math.random() * 20 - 10]
+              y: isMounted ? [0, (index % 10) - 5] : [0, 0],
+              x: isMounted ? [0, ((index + 2) % 10) - 5] : [0, 0]
             }}
             transition={{
               delay: item.delay,
               opacity: { duration: 1 },
               scale: { duration: 0.8 },
               y: { 
-                duration: 3 + Math.random() * 2, 
+                duration: 3 + (index % 3), 
                 repeat: Infinity,
                 repeatType: "mirror" 
               },
               x: { 
-                duration: 4 + Math.random() * 2, 
+                duration: 4 + (index % 2), 
                 repeat: Infinity,
                 repeatType: "mirror" 
               }
