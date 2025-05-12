@@ -1,71 +1,46 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
-import { motion,  } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { ArrowRight, Play, Camera, Mic, Tv, Share2, Rss, FileText, Youtube, Instagram, Twitter } from 'lucide-react';
 import Link from 'next/link';
 
-// Configuration fixe des particules pour éviter les problèmes d'hydratation
-const FIXED_PARTICLES = [
-  { left: "10%", top: "20%", delay: 0.1, duration: 5 },
-  { left: "85%", top: "40%", delay: 0.2, duration: 6 },
-  { left: "50%", top: "10%", delay: 0.3, duration: 7 },
-  { left: "70%", top: "5%", delay: 0.4, duration: 5.5 },
-  { left: "15%", top: "30%", delay: 0.5, duration: 6.5 },
-  { left: "80%", top: "60%", delay: 0.6, duration: 7.5 },
-  { left: "30%", top: "70%", delay: 0.7, duration: 5.2 },
-  { left: "60%", top: "80%", delay: 0.8, duration: 6.2 },
-  { left: "20%", top: "50%", delay: 0.9, duration: 7.2 },
-  { left: "40%", top: "15%", delay: 1.0, duration: 5.7 },
-  { left: "90%", top: "25%", delay: 1.1, duration: 6.7 },
-  { left: "25%", top: "85%", delay: 1.2, duration: 7.7 },
-  { left: "75%", top: "45%", delay: 1.3, duration: 5.3 },
-  { left: "35%", top: "65%", delay: 1.4, duration: 6.3 },
-  { left: "65%", top: "35%", delay: 1.5, duration: 7.3 },
-  { left: "5%", top: "55%", delay: 1.6, duration: 5.8 },
-  { left: "55%", top: "75%", delay: 1.7, duration: 6.8 },
-  { left: "45%", top: "25%", delay: 1.8, duration: 7.8 },
-  { left: "95%", top: "90%", delay: 1.9, duration: 5.4 },
-  { left: "15%", top: "40%", delay: 2.0, duration: 6.4 },
-  { left: "85%", top: "70%", delay: 2.1, duration: 7.4 },
-  { left: "50%", top: "30%", delay: 2.2, duration: 5.9 },
-  { left: "25%", top: "20%", delay: 2.3, duration: 6.9 },
-  { left: "75%", top: "60%", delay: 2.4, duration: 7.9 },
-  { left: "35%", top: "95%", delay: 2.5, duration: 5.5 },
-  { left: "60%", top: "10%", delay: 2.6, duration: 6.5 },
-  { left: "10%", top: "80%", delay: 2.7, duration: 7.5 },
-  { left: "90%", top: "50%", delay: 2.8, duration: 5.1 },
-  { left: "20%", top: "75%", delay: 2.9, duration: 6.1 },
-  { left: "80%", top: "15%", delay: 3.0, duration: 7.1 }
-];
-
-// Configuration fixe des icônes média
-const MEDIA_ICONS = [
-  { icon: <Camera size={24} />, delay: 0, position: { top: '20%', left: '10%' } },
-  { icon: <Mic size={24} />, delay: 0.2, position: { top: '70%', left: '15%' } },
-  { icon: <Tv size={24} />, delay: 0.4, position: { top: '30%', left: '85%' } },
-  { icon: <Share2 size={24} />, delay: 0.6, position: { top: '60%', left: '80%' } },
-  { icon: <Rss size={24} />, delay: 0.8, position: { top: '40%', left: '20%' } },
-  { icon: <FileText size={24} />, delay: 1, position: { top: '80%', left: '70%' } },
-  { icon: <Youtube size={28} />, delay: 1.2, position: { top: '25%', left: '75%' } },
-  { icon: <Instagram size={28} />, delay: 1.4, position: { top: '65%', left: '25%' } },
-  { icon: <Twitter size={28} />, delay: 1.6, position: { top: '50%', left: '50%' } },
-];
+interface MediaIcon {
+  icon: React.ReactNode;
+  delay: number;
+  position: {
+    top: string;
+    left: string;
+  };
+}
 
 const HeroSection = () => {
-  const [isMounted, setIsMounted] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [mediaIcons, setMediaIcons] = useState<MediaIcon[]>([]);
 
-  // N'activez les animations côté client qu'après le montage du composant
   useEffect(() => {
-    setIsMounted(true);
+    setIsVisible(true);
     
     // Simulation de démarrage de vidéo après chargement
-    if (videoRef.current) {
-      videoRef.current.play().catch(error => {
-        // Gestion silencieuse des erreurs d'autoplay
-        console.log("Autoplay prevented:", error);
-      });
-    }
+    setTimeout(() => {
+      if (videoRef.current) {
+        videoRef.current.play();
+      }
+    }, 1000);
+
+    // Configuration des icônes média flottantes
+    const icons: MediaIcon[] = [
+      { icon: <Camera size={24} />, delay: 0, position: { top: '20%', left: '10%' } },
+      { icon: <Mic size={24} />, delay: 0.2, position: { top: '70%', left: '15%' } },
+      { icon: <Tv size={24} />, delay: 0.4, position: { top: '30%', left: '85%' } },
+      { icon: <Share2 size={24} />, delay: 0.6, position: { top: '60%', left: '80%' } },
+      { icon: <Rss size={24} />, delay: 0.8, position: { top: '40%', left: '20%' } },
+      { icon: <FileText size={24} />, delay: 1, position: { top: '80%', left: '70%' } },
+      { icon: <Youtube size={28} />, delay: 1.2, position: { top: '25%', left: '75%' } },
+      { icon: <Instagram size={28} />, delay: 1.4, position: { top: '65%', left: '25%' } },
+      { icon: <Twitter size={28} />, delay: 1.6, position: { top: '50%', left: '50%' } },
+    ];
+    setMediaIcons(icons);
   }, []);
 
   return (
@@ -75,7 +50,7 @@ const HeroSection = () => {
         <video 
           ref={videoRef} 
           className="absolute w-full h-full object-cover"
-          autoPlay={false} // Important: désactivé par défaut pour éviter les problèmes d'hydratation
+          autoPlay 
           muted 
           loop 
           playsInline
@@ -88,7 +63,7 @@ const HeroSection = () => {
       {/* Grille dynamique en arrière-plan */}
       <div className="absolute inset-0 z-0">
         <div className="relative w-full h-full">
-          {isMounted && Array.from({ length: 10 }).map((_, rowIndex) => (
+          {Array.from({ length: 10 }).map((_, rowIndex) => (
             <div key={`row-${rowIndex}`} className="absolute w-full" style={{ top: `${rowIndex * 10}%` }}>
               <motion.div 
                 className="h-px bg-white/5 w-full"
@@ -98,11 +73,11 @@ const HeroSection = () => {
               />
             </div>
           ))}
-          {isMounted && Array.from({ length: 10 }).map((_, colIndex) => (
+          {Array.from({ length: 10 }).map((_, colIndex) => (
             <div key={`col-${colIndex}`} className="absolute h-full" style={{ left: `${colIndex * 10}%` }}>
               <motion.div 
                 className="w-px bg-white/5 h-full"
-                initial={{ scaleX: 0 }}
+                initial={{ scaleY: 0 }}
                 animate={{ scaleY: 1 }}
                 transition={{ duration: 1.5, delay: 0.1 * colIndex }}
               />
@@ -111,34 +86,33 @@ const HeroSection = () => {
         </div>
       </div>
 
-      {/* Particules et icônes média avec positions fixes */}
+      {/* Particules et icônes média */}
       <div className="absolute inset-0 z-10 pointer-events-none">
-        {/* Particules brillantes avec positions prédéfinies */}
-        {isMounted && FIXED_PARTICLES.map((particle, i) => (
+        {/* Particules brillantes */}
+        {Array.from({ length: 30 }).map((_, i) => (
           <motion.div
             key={i}
             className="absolute w-1 h-1 rounded-full bg-blue-400/40"
             style={{
-              left: particle.left,
-              top: particle.top,
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
             }}
             animate={{
-              y: [0, 10, 0],
-              x: [0, 5, 0],
+              y: [0, Math.random() * 30 - 15],
+              x: [0, Math.random() * 30 - 15],
               opacity: [0.2, 0.5, 0.2],
-              scale: [1, 1.3, 1],
+              scale: [1, Math.random() * 1.5 + 1, 1],
             }}
             transition={{
-              duration: particle.duration,
-              delay: particle.delay,
+              duration: 5 + Math.random() * 5,
               repeat: Infinity,
               repeatType: "mirror",
             }}
           />
         ))}
 
-        {/* Icônes média flottantes avec positions prédéfinies */}
-        {isMounted && MEDIA_ICONS.map((item, index) => (
+        {/* Icônes média flottantes */}
+        {mediaIcons.map((item, index) => (
           <motion.div
             key={index}
             className="absolute text-white/30 z-10"
@@ -150,20 +124,20 @@ const HeroSection = () => {
             animate={{ 
               opacity: 0.4, 
               scale: 1,
-              y: [0, 10, 0],
-              x: [0, 5, 0]
+              y: [0, Math.random() * 20 - 10],
+              x: [0, Math.random() * 20 - 10]
             }}
             transition={{
               delay: item.delay,
               opacity: { duration: 1 },
               scale: { duration: 0.8 },
               y: { 
-                duration: 3 + (index % 2), 
+                duration: 3 + Math.random() * 2, 
                 repeat: Infinity,
                 repeatType: "mirror" 
               },
               x: { 
-                duration: 4 + (index % 3), 
+                duration: 4 + Math.random() * 2, 
                 repeat: Infinity,
                 repeatType: "mirror" 
               }
@@ -179,15 +153,15 @@ const HeroSection = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Texte et appels à l'action */}
           <motion.div
-            initial={isMounted ? { opacity: 0, x: -50 } : { opacity: 1, x: 0 }}
-            animate={isMounted ? { opacity: 1, x: 0 } : {}}
+            initial={{ opacity: 0, x: -50 }}
+            animate={isVisible ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.8, delay: 0.3 }}
             className="text-white"
           >
             <motion.div 
               className="inline-block mb-3 px-4 py-1 bg-blue-600/30 backdrop-blur-md border border-blue-500/30 rounded-full"
-              initial={isMounted ? { opacity: 0, y: -20 } : { opacity: 1, y: 0 }}
-              animate={isMounted ? { opacity: 1, y: 0 } : {}}
+              initial={{ opacity: 0, y: -20 }}
+              animate={isVisible ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.5 }}
             >
               <span className="text-sm font-medium text-blue-200">Club Média ENCG Settat</span>
@@ -195,8 +169,8 @@ const HeroSection = () => {
             
             <motion.h1 
               className="text-4xl lg:text-6xl font-bold mb-6 leading-tight"
-              initial={isMounted ? { opacity: 0, y: 20 } : { opacity: 1, y: 0 }}
-              animate={isMounted ? { opacity: 1, y: 0 } : {}}
+              initial={{ opacity: 0, y: 20 }}
+              animate={isVisible ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.7, delay: 0.7 }}
             >
               <span className="block">Racontez votre histoire</span>
@@ -205,8 +179,8 @@ const HeroSection = () => {
             
             <motion.p 
               className="text-lg lg:text-xl text-blue-100 mb-8 max-w-xl"
-              initial={isMounted ? { opacity: 0 } : { opacity: 1 }}
-              animate={isMounted ? { opacity: 1 } : {}}
+              initial={{ opacity: 0 }}
+              animate={isVisible ? { opacity: 1 } : {}}
               transition={{ duration: 0.6, delay: 0.9 }}
             >
               Produisez, créez et diffusez du contenu audiovisuel de qualité professionnelle. Rejoignez le club média qui transforme les étudiants en créateurs daujourdhui et en professionnels de demain.
@@ -214,39 +188,38 @@ const HeroSection = () => {
             
             <motion.div 
               className="flex flex-wrap gap-4"
-              initial={isMounted ? { opacity: 0, y: 20 } : { opacity: 1, y: 0 }}
-              animate={isMounted ? { opacity: 1, y: 0 } : {}}
+              initial={{ opacity: 0, y: 20 }}
+              animate={isVisible ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 1.1 }}
             >
               <Link href="/rejoindre">
                 <motion.div
                   className="relative overflow-hidden px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-800 text-white font-medium rounded-full shadow-lg flex items-center group cursor-pointer"
-                  whileHover={isMounted ? { 
+                  whileHover={{ 
                     scale: 1.05,
                     boxShadow: "0 0 20px rgba(59, 130, 246, 0.5)"
-                  } : {}}
-                  whileTap={isMounted ? { scale: 0.98 } : {}}
+                  }}
+                  whileTap={{ scale: 0.98 }}
                 >
                   {/* Effet de brillance */}
-                  {isMounted && (
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-400/30 to-transparent"
-                      initial={{ x: "100%" }}
-                      animate={{ x: "-100%" }}
-                      transition={{ 
-                        repeat: Infinity, 
-                        repeatType: "loop", 
-                        duration: 2,
-                        ease: "linear",
-                        repeatDelay: 0.5
-                      }}
-                    />
-                  )}
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-400/30 to-transparent"
+                    initial={{ x: "100%" }}
+                    animate={{ x: "-100%" }}
+                    transition={{ 
+                      repeat: Infinity, 
+                      repeatType: "loop", 
+                      duration: 2,
+                      ease: "linear",
+                      repeatDelay: 0.5
+                    }}
+                  />
                   
                   Rejoindre le Club
                   <motion.div
                     className="ml-2"
-                    whileHover={isMounted ? { x: 5 } : {}}
+                    initial={{ x: 0 }}
+                    whileHover={{ x: 5 }}
                     transition={{ type: "spring", stiffness: 400 }}
                   >
                     <ArrowRight size={18} />
@@ -257,15 +230,15 @@ const HeroSection = () => {
               <Link href="/showreel">
                 <motion.div
                   className="px-6 py-3 border border-blue-500/50 bg-blue-900/20 backdrop-blur-sm text-white font-medium rounded-full flex items-center group cursor-pointer"
-                  whileHover={isMounted ? { 
+                  whileHover={{ 
                     backgroundColor: "rgba(30, 58, 138, 0.3)",
                     borderColor: "rgba(59, 130, 246, 0.7)"
-                  } : {}}
-                  whileTap={isMounted ? { scale: 0.98 } : {}}
+                  }}
+                  whileTap={{ scale: 0.98 }}
                 >
                   <motion.div
                     className="mr-2 bg-white/20 p-1 rounded-full"
-                    whileHover={isMounted ? { scale: 1.1 } : {}}
+                    whileHover={{ scale: 1.1 }}
                   >
                     <Play size={16} className="text-white" />
                   </motion.div>
@@ -277,8 +250,8 @@ const HeroSection = () => {
           
           {/* Élément visuel 3D */}
           <motion.div
-            initial={isMounted ? { opacity: 0, rotateY: 30, z: -100 } : { opacity: 1, rotateY: 0, z: 0 }}
-            animate={isMounted ? { opacity: 1, rotateY: 0, z: 0 } : {}}
+            initial={{ opacity: 0, rotateY: 30, z: -100 }}
+            animate={isVisible ? { opacity: 1, rotateY: 0, z: 0 } : {}}
             transition={{ duration: 1.2, delay: 1 }}
             className="relative hidden lg:block"
           >
@@ -286,11 +259,11 @@ const HeroSection = () => {
               {/* Caméra 3D */}
               <motion.div 
                 className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30"
-                animate={isMounted ? { 
+                animate={{ 
                   y: [0, 10, 0],
                   rotateY: [0, 10, 0],
                   rotateZ: [0, 5, 0]
-                } : {}}
+                }}
                 transition={{ 
                   duration: 5, 
                   repeat: Infinity,
@@ -316,10 +289,10 @@ const HeroSection = () => {
               {/* Écran de smartphone */}
               <motion.div
                 className="w-56 h-96 bg-gradient-to-b from-gray-800 to-gray-900 rounded-3xl overflow-hidden shadow-2xl border-4 border-gray-700 p-2 mx-auto relative z-20"
-                animate={isMounted ? { 
+                animate={{ 
                   rotateY: [0, 5, 0],
                   rotateZ: [0, 2, 0]
-                } : {}}
+                }}
                 transition={{ 
                   duration: 6, 
                   repeat: Infinity,
@@ -358,10 +331,10 @@ const HeroSection = () => {
               {/* Micro professionnel */}
               <motion.div
                 className="absolute -bottom-10 -right-10 z-10"
-                animate={isMounted ? { 
+                animate={{ 
                   y: [0, -5, 0],
                   rotate: [0, 3, 0]
-                } : {}}
+                }}
                 transition={{ 
                   duration: 4, 
                   repeat: Infinity,
@@ -383,10 +356,10 @@ const HeroSection = () => {
               {/* Feuilles de script */}
               <motion.div
                 className="absolute -left-16 -bottom-10 z-10 transform -rotate-12"
-                animate={isMounted ? { 
+                animate={{ 
                   y: [0, 3, 0],
                   rotate: [-12, -10, -12]
-                } : {}}
+                }}
                 transition={{ 
                   duration: 3, 
                   repeat: Infinity,
@@ -415,8 +388,8 @@ const HeroSection = () => {
       <div className="absolute bottom-10 left-0 right-0 z-20">
         <motion.div 
           className="flex justify-center items-center gap-6"
-          initial={isMounted ? { opacity: 0, y: 20 } : { opacity: 1, y: 0 }}
-          animate={isMounted ? { opacity: 1, y: 0 } : {}}
+          initial={{ opacity: 0, y: 20 }}
+          animate={isVisible ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.7, delay: 1.3 }}
         >
           {[
@@ -428,15 +401,15 @@ const HeroSection = () => {
             <motion.div
               key={index}
               className="flex flex-col items-center gap-2"
-              whileHover={isMounted ? { y: -5 } : {}}
+              whileHover={{ y: -5 }}
             >
               <motion.div
                 className="w-10 h-10 rounded-full bg-blue-900/50 backdrop-blur-md border border-blue-500/30 flex items-center justify-center text-white"
-                whileHover={isMounted ? { 
+                whileHover={{ 
                   scale: 1.1,
                   backgroundColor: "rgba(30, 64, 175, 0.7)",
                   borderColor: "rgba(59, 130, 246, 0.7)"
-                } : {}}
+                }}
               >
                 {item.icon}
               </motion.div>
@@ -447,12 +420,12 @@ const HeroSection = () => {
       </div>
       
       {/* Scroll indicator */}
-     <motion.div
+       <motion.div
         className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-30"
         initial={{ opacity: 0 }}
         animate={{ 
           y: [0, 8, 0],
-          opacity: isMounted ? 0.8 : 0
+          opacity: isVisible ? 0.8 : 0
         }}
         transition={{ 
           y: { duration: 1.5, repeat: Infinity },
