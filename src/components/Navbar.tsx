@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ChevronDown } from 'lucide-react';
+import { Menu, X, ChevronDown, Moon, Sun } from 'lucide-react';
 import Link from 'next/link';
 
 // Définition des liens de navigation
@@ -28,7 +28,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSubmenu, setActiveSubmenu] = useState<number | null>(null);
-  
+  const [darkMode, setDarkMode] = useState(false);
   
   // Effet de scroll pour changer l'apparence de la navbar
   useEffect(() => {
@@ -44,7 +44,11 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
   
-  
+  // Fonction pour basculer le mode sombre/clair
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+    document.documentElement.classList.toggle('dark');
+  };
   
   // Fonction pour gérer l'ouverture/fermeture des sous-menus
   const toggleSubmenu = (index: number) => {
@@ -146,7 +150,15 @@ export default function Navbar() {
           
           {/* Boutons d'actions */}
           <div className="flex items-center">
-            
+            {/* Toggle mode sombre/clair */}
+            <motion.button
+              whileHover={{ scale: 1.1, rotate: 15 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={toggleDarkMode}
+              className="p-2 rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none"
+            >
+              {darkMode ? <Sun size={20} /> : <Moon size={20} />}
+            </motion.button>
             
             {/* Bouton rejoindre */}
             <Link href="/rejoindre">
